@@ -19,7 +19,6 @@ package main
 import (
 	"errors"
 	"fmt"
-	"strings"
 
 	"github.com/hyperledger/fabric/core/chaincode/shim"
 )
@@ -40,28 +39,16 @@ func main() {
 
 // Init resets all the things
 func (t *SimpleChaincode) Init(stub *shim.ChaincodeStub, function string, args []string) ([]byte, error) {
-	
-	//Sunil added here 25-10-2016
-	var i = 0
-	
-	if len(args) != 2 {
-		return nil, errors.New("Incorrect number of arguments. Expecting 2")
+	if len(args) != 1 {
+		return nil, errors.New("Incorrect number of arguments. Expecting 1")
 	}
 
-	//Sunil added here 25-10-2016
-	stub.PutState("hello_world", []byte(args[i]))
-	
-	i++
-	err := stub.PutState("hello_universe", []byte(args[i]))
-	if err != nil {
+	//Sunil added here 17-10-2016
+    err := stub.PutState("hello_world", []byte(args[0]))
+    if err != nil {
         return nil, err
     }
 	
-	//Sunil Commented on 25-10-2016
-	/*
-    err := stub.PutState("hello_world", []byte(args[0]))
-	*/
-
 	return nil, nil
 }
 
@@ -96,12 +83,10 @@ func (t *SimpleChaincode) Query(stub *shim.ChaincodeStub, function string, args 
 
 //Sunil added the write function
 func (t *SimpleChaincode) write(stub *shim.ChaincodeStub, args []string) ([]byte, error) {
-    var key, newkey, newvalue, value string
+    var key, value string
     var err error
     fmt.Println("running write()")
 
-	//Sunil commented this 25-10-2016
-	/*
     if len(args) != 2 {
         return nil, errors.New("Incorrect number of arguments. Expecting 2. name of the key and value to set")
     }
@@ -112,27 +97,6 @@ func (t *SimpleChaincode) write(stub *shim.ChaincodeStub, args []string) ([]byte
     if err != nil {
         return nil, err
     }
-	*/
-	
-	//Sunil added this 25-10-2016
-    if len(args) != 4 {
-        return nil, errors.New("Incorrect number of arguments. Expecting 4. 2 sets of name of the key and value to set")
-    }
-
-    key = args[0]                            //rename for first set
-    value = args[1]
-    err = stub.PutState(key, []byte(value))  //write the variable into the chaincode state
-    if err != nil {
-        return nil, err
-    }
-	
-	newkey = args[2]                            //rename for second set
-    newvalue = args[3]
-    err = stub.PutState(newkey, []byte(newvalue))  //write the variable into the chaincode state
-    if err != nil {
-        return nil, err
-    }
-	
     return nil, nil
 }
 
